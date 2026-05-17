@@ -41,16 +41,16 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="py-32 px-4 sm:px-6 lg:px-8 bg-bg-page">
+    <section id="services" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-bg-page">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-24 items-start">
           <div>
             <h2 className="text-[10px] uppercase tracking-[0.4em] text-accent font-black mb-6">Our Capabilities</h2>
-            <h3 className="text-5xl md:text-7xl font-display font-black text-fg-main leading-none uppercase tracking-tighter mb-12">
+            <h3 className="text-4xl md:text-7xl font-display font-black text-fg-main leading-tight md:leading-none uppercase tracking-tighter mb-12">
               Strategic <br />
-              Digital <span className="text-gray-500 underline decoration-accent decoration-8 underline-offset-8">Solutions</span>
+              Digital <span className="text-gray-500 underline decoration-accent decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">Solutions</span>
             </h3>
-            <p className="text-lg text-gray-500 mb-12 leading-relaxed max-w-sm font-light">
+            <p className="text-base md:text-lg text-gray-500 mb-12 leading-relaxed max-w-sm font-light">
               I partner with forward-thinking companies to solve complex problems through design and high-performance code. My approach is data-driven, analytical, and deeply creative.
             </p>
             <div className="pt-12 border-t border-border-theme flex items-center justify-between">
@@ -67,13 +67,13 @@ export default function Services() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="group flex justify-between items-baseline border-b border-border-theme py-10 hover:border-accent transition-colors cursor-default"
+                className="group flex justify-between items-baseline border-b border-border-theme py-8 md:py-10 hover:border-accent transition-colors cursor-default"
               >
                 <div className="flex flex-col">
-                  <h4 className="text-3xl font-display font-black text-fg-main uppercase tracking-tight group-hover:text-accent transition-colors">{service.title}</h4>
-                  <p className="text-gray-600 text-sm mt-3 opacity-0 group-hover:opacity-100 transition-opacity max-w-sm">{service.description}</p>
+                  <h4 className="text-2xl md:text-3xl font-display font-black text-fg-main uppercase tracking-tight group-hover:text-accent transition-colors">{service.title}</h4>
+                  <p className="text-gray-600 text-xs md:text-sm mt-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity max-w-sm">{service.description}</p>
                 </div>
-                <span className="text-xs font-black text-gray-400 group-hover:text-accent transition-colors">0{idx + 1}</span>
+                <span className="text-xs font-black text-gray-400 group-hover:text-accent transition-colors ml-4">0{idx + 1}</span>
               </motion.div>
             ))}
           </div>

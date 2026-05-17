@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Sun, Moon, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { useState } from 'react';
 import { signInWithGoogle, logout, User } from '../lib/firebase';
@@ -43,7 +43,7 @@ export default function Header({ isDark, toggleTheme, user, loading }: HeaderPro
         </motion.div>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-10">
+        <div className="hidden md:flex items-center space-x-6 lg:space-x-10">
           {navItems.map((item, idx) => (
             <motion.a
               key={item.name}
@@ -109,26 +109,7 @@ export default function Header({ isDark, toggleTheme, user, loading }: HeaderPro
         </div>
 
         {/* Mobile Toggle */}
-        <div className="flex items-center md:hidden gap-2">
-          {!(loading || isSigningIn) && !user && (
-            <button 
-              onClick={handleLogin}
-              disabled={isSigningIn}
-              className="p-2 text-fg-main disabled:opacity-50"
-              aria-label="Login"
-            >
-              <LogIn size={20} />
-            </button>
-          )}
-          {user && (
-             <button 
-                onClick={() => logout()}
-                className="p-2 text-fg-main"
-                aria-label="Logout"
-             >
-               <LogOut size={20} />
-             </button>
-          )}
+        <div className="flex items-center md:hidden gap-1">
           <button 
             type="button"
             onClick={toggleTheme}
@@ -149,26 +130,86 @@ export default function Header({ isDark, toggleTheme, user, loading }: HeaderPro
       </nav>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="md:hidden bg-bg-page border-b border-border-theme overflow-hidden"
-        >
-          <div className="px-4 py-6 space-y-4">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[60] bg-bg-page flex flex-col p-8 md:hidden"
+          >
+            <div className="flex justify-between items-center mb-16">
+              <div className="text-2xl font-display font-black tracking-tighter text-fg-main uppercase">
+                WesoftTech<span className="text-accent">.</span>
+              </div>
+              <button 
                 onClick={() => setIsOpen(false)}
-                className="block text-lg font-bold uppercase tracking-widest text-fg-main hover:text-accent transition-colors"
+                className="p-2 text-fg-main"
               >
-                {item.name}
+                <X size={32} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-8">
+              {navItems.map((item, idx) => (
+                <motion.a
+                  key={item.name}
+                  href={item.href}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  onClick={() => setIsOpen(false)}
+                  className="text-5xl font-display font-black uppercase tracking-tighter text-fg-main hover:text-accent transition-colors"
+                >
+                  {item.name}
+                </motion.a>
+              ))}
+            </div>
+
+            <div className="mt-auto pt-12 border-t border-border-theme flex flex-col gap-6">
+              {user ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName || 'User'} className="w-12 h-12 rounded-full border border-border-theme" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-border-theme flex items-center justify-center">
+                        <UserIcon size={24} />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-bold text-fg-main">{user.displayName}</p>
+                      <button 
+                        onClick={() => logout()}
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleLogin}
+                  className="flex items-center justify-center gap-4 bg-accent text-black p-6 text-[12px] font-black uppercase tracking-[0.3em]"
+                >
+                  <LogIn size={20} />
+                  Login with Google
+                </button>
+              )}
+              
+              <a 
+                href="#contact"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center bg-fg-main text-bg-page p-6 text-[12px] font-black uppercase tracking-[0.3em]"
+              >
+                Start a Project
               </a>
-            ))}
-          </div>
-        </motion.div>
-      )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Mail, MapPin, CheckCircle, X } from 'lucide-react';
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, FocusEvent } from 'react';
 import { db, auth } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -58,25 +58,56 @@ export default function Contact() {
     subject: '',
     message: ''
   });
-  const [emailError, setEmailError] = useState('');
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      setEmailError('');
-    } else if (!re.test(email)) {
-      setEmailError('Invalid email format');
-    } else {
-      setEmailError('');
+  const validateField = (name: string, value: string) => {
+    let error = '';
+    switch (name) {
+      case 'name':
+        if (!value.trim()) error = 'Name is required';
+        else if (value.trim().length < 2) error = 'Name must be at least 2 characters';
+        break;
+      case 'email':
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!value.trim()) error = 'Email is required';
+        else if (!emailRegex.test(value)) error = 'Please enter a valid email address';
+        break;
+      case 'subject':
+        if (!value.trim()) error = 'Subject is required';
+        break;
+      case 'message':
+        if (!value.trim()) error = 'Message is required';
+        else if (value.trim().split(/\s+/).length < 5) error = 'Message should be at least 5 words';
+        break;
     }
+    setErrors(prev => ({ ...prev, [name]: error }));
+    return error;
+  };
+
+  const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    validateField(e.target.name, e.target.value);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (emailError) return;
+    
+    // Validate all fields before submission
+    const nameError = validateField('name', formData.name);
+    const emailError = validateField('email', formData.email);
+    const subjectError = validateField('subject', formData.subject);
+    const messageError = validateField('message', formData.message);
+
+    if (nameError || emailError || subjectError || messageError) {
+      return;
+    }
     
     setIsSubmitting(true);
     setSubmitError('');
@@ -106,27 +137,27 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="contact" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="flex flex-col">
         <div className="mb-20">
           <h2 className="text-[10px] uppercase tracking-[0.4em] text-accent font-black mb-6">Inquiry</h2>
-          <h3 className="text-5xl md:text-[100px] font-display font-black text-fg-main leading-[0.8] uppercase tracking-tighter">
+          <h3 className="text-4xl sm:text-5xl md:text-[100px] font-display font-black text-fg-main leading-[0.8] uppercase tracking-tighter">
             Let's build <br />
             <span className="text-gray-500 opacity-40">The Future</span>
           </h3>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-16 relative">
-          <div className="lg:col-span-4 space-y-12">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 relative">
+          <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-12">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 mb-4">Contact Info</p>
-              <p className="text-xl font-medium text-fg-main">madhavdodiya2017@gmail.com</p>
-              <p className="text-xl font-medium text-fg-main">+91 81406 74266</p>
+              <p className="text-lg md:text-xl font-medium text-fg-main break-all sm:break-normal">madhavdodiya2017@gmail.com</p>
+              <p className="text-lg md:text-xl font-medium text-fg-main">+91 81406 74266</p>
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 mb-4">Location</p>
-              <p className="text-xl font-medium text-fg-main">Ahmedabad, Gujarat, IND</p>
-              <p className="text-xl font-medium text-fg-main">Worldwide / Remote</p>
+              <p className="text-lg md:text-xl font-medium text-fg-main">Ahmedabad, Gujarat, IND</p>
+              <p className="text-lg md:text-xl font-medium text-fg-main">Worldwide / Remote</p>
             </div>
           </div>
 
@@ -140,50 +171,80 @@ export default function Contact() {
                   exit={{ opacity: 0, y: -20 }}
                   onSubmit={handleSubmit} 
                   className="flex flex-col gap-6"
+                  noValidate
                 >
                     <div className="grid md:grid-cols-2 gap-6">
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="NAME"
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full bg-transparent border border-border-theme p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors"
-                      />
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1.5">
+                        <input 
+                          type="text" 
+                          name="name"
+                          placeholder="NAME"
+                          value={formData.name}
+                          onChange={(e) => {
+                            setFormData({...formData, name: e.target.value});
+                            if (errors.name) validateField('name', e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          className={`w-full bg-transparent border ${errors.name ? 'border-red-500' : 'border-border-theme'} p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors`}
+                        />
+                        {errors.name && (
+                          <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest px-1">{errors.name}</span>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1.5">
                         <input 
                           type="email" 
-                          required
+                          name="email"
                           placeholder="EMAIL"
                           value={formData.email}
                           onChange={(e) => {
-                            const value = e.target.value;
-                            setFormData({...formData, email: value});
-                            validateEmail(value);
+                            setFormData({...formData, email: e.target.value});
+                            if (errors.email) validateField('email', e.target.value);
                           }}
-                          className={`w-full bg-transparent border ${emailError ? 'border-red-500' : 'border-border-theme'} p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors`}
+                          onBlur={handleBlur}
+                          className={`w-full bg-transparent border ${errors.email ? 'border-red-500' : 'border-border-theme'} p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors`}
                         />
-                        {emailError && (
-                          <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{emailError}</span>
+                        {errors.email && (
+                          <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest px-1">{errors.email}</span>
                         )}
                       </div>
                     </div>
-                    <input 
-                      type="text" 
-                      required
-                      placeholder="SUBJECT"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                      className="w-full bg-transparent border border-border-theme p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors"
-                    />
-                    <textarea 
-                      rows={4}
-                      required
-                      placeholder="PROJECT BRIEF"
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="w-full bg-transparent border border-border-theme p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors resize-none"
-                    ></textarea>
+                    
+                    <div className="flex flex-col gap-1.5">
+                      <input 
+                        type="text" 
+                        name="subject"
+                        placeholder="SUBJECT"
+                        value={formData.subject}
+                        onChange={(e) => {
+                          setFormData({...formData, subject: e.target.value});
+                          if (errors.subject) validateField('subject', e.target.value);
+                        }}
+                        onBlur={handleBlur}
+                        className={`w-full bg-transparent border ${errors.subject ? 'border-red-500' : 'border-border-theme'} p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors`}
+                      />
+                      {errors.subject && (
+                        <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest px-1">{errors.subject}</span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <textarea 
+                        rows={4}
+                        name="message"
+                        placeholder="PROJECT BRIEF"
+                        value={formData.message}
+                        onChange={(e) => {
+                          setFormData({...formData, message: e.target.value});
+                          if (errors.message) validateField('message', e.target.value);
+                        }}
+                        onBlur={handleBlur}
+                        className={`w-full bg-transparent border ${errors.message ? 'border-red-500' : 'border-border-theme'} p-6 text-[11px] font-bold tracking-[0.3em] text-fg-main focus:border-accent outline-none transition-colors resize-none`}
+                      ></textarea>
+                      {errors.message && (
+                        <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest px-1">{errors.message}</span>
+                      )}
+                    </div>
                     
                     {submitError && (
                       <div className="p-4 border border-red-500 bg-red-500/5 text-red-500 text-[10px] font-bold uppercase tracking-widest">

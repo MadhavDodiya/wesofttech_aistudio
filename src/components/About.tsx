@@ -20,9 +20,9 @@ export default function About() {
   ];
 
   return (
-    <section id="about" className="py-32 px-4 sm:px-6 lg:px-8 border-t border-border-theme">
+    <section id="about" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 border-t border-border-theme">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -30,12 +30,12 @@ export default function About() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-[10px] uppercase tracking-[0.4em] text-accent font-black mb-8">About Me</h2>
-            <h3 className="text-5xl md:text-7xl font-display font-black text-fg-main leading-tight uppercase tracking-tighter mb-12">
+            <h3 className="text-4xl md:text-7xl font-display font-black text-fg-main leading-tight uppercase tracking-tighter mb-12">
               Driven by <span className="text-gray-500 opacity-40">Precision</span>,<br />
               Inspired by Minimalist <span className="text-gray-500 opacity-40">Form</span>.
             </h3>
             
-            <div className="grid sm:grid-cols-2 gap-12">
+            <div className="grid sm:grid-cols-2 gap-8 md:gap-12">
               {highlights.map((item, idx) => (
                 <div key={idx} className="space-y-4">
                   <h4 className="text-[12px] font-black uppercase tracking-widest text-fg-main border-l-2 border-accent pl-4">
@@ -54,17 +54,17 @@ export default function About() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
           >
             {stats.map((stat, idx) => (
               <div 
                 key={idx} 
-                className="bg-bg-page border border-border-theme p-12 flex flex-col justify-center items-center text-center group hover:border-accent transition-colors"
+                className="bg-bg-page border border-border-theme p-6 md:p-12 flex flex-col justify-center items-center text-center group hover:border-accent transition-colors"
               >
-                <span className="text-5xl md:text-6xl font-display font-black text-fg-main group-hover:text-accent transition-colors">
+                <span className="text-4xl md:text-6xl font-display font-black text-fg-main group-hover:text-accent transition-colors">
                   {stat.value}
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mt-4">
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mt-4">
                   {stat.label}
                 </span>
               </div>

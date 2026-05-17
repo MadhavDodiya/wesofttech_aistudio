@@ -2,5 +2,5 @@
   "name": "WesoftTech Portfolio",
   "description": "A high-end portfolio website for WesoftTech featuring a curated gallery, services menu, and integrated contact system.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

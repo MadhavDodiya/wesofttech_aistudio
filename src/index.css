@@ -4,6 +4,11 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 @theme {

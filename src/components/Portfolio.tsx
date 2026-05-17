@@ -16,6 +16,8 @@ const projects = [
     ],
     link: '#',
     description: 'A high-performance graphics engine built with C++ and Vulkan, focusing on real-time ray tracing and advanced light simulation.',
+    challenge: 'Achieving stable 60FPS on mid-range hardware while implementing complex global illumination and real-time reflections.',
+    solution: 'Developed a custom spatial acceleration structure and optimized the shader pipeline using compute shaders for asynchronous lighting calculations.',
     technologies: ['C++', 'Vulkan', 'GLSL', 'Thread Building Blocks'],
     client: 'Lumina Interactive',
     year: '2024',
@@ -32,6 +34,8 @@ const projects = [
     ],
     link: '#',
     description: 'A comprehensive brand identity overhaul for a global logistics firm, including logo design, typography systems, and digital guidelines.',
+    challenge: 'Creating a modern identity that respects a 30-year legacy while appealing to a new generation of tech-savvy clients.',
+    solution: 'Designed a modular logo system and a bold, high-contrast color palette, paired with a custom variable typeface that scales across all platforms.',
     technologies: ['Adobe Illustrator', 'Figma', 'Brand Strategy'],
     client: 'Atlas Global Logistics',
     year: '2023',
@@ -48,6 +52,8 @@ const projects = [
     ],
     link: '#',
     description: 'An AI-powered travel assistant that personalizes itineraries based on real-time data and user preferences.',
+    challenge: 'Processing thousands of disparate data points from various APIs to provide instant, coherent travel recommendations.',
+    solution: 'Implemented a multi-agent AI architecture and a robust caching layer to ensure lightning-fast responses without sacrificing accuracy.',
     technologies: ['Python', 'PyTorch', 'Next.js', 'PostgreSQL'],
     client: 'Voyage Travel Solutions',
     year: '2024',
@@ -64,6 +70,8 @@ const projects = [
     ],
     link: '#',
     description: 'A minimalist operating system concept designed for distraction-free creative workflows.',
+    challenge: 'Designing an interface that stays invisible during work but provides powerful tools instantly when needed.',
+    solution: 'Utilized gesture-based navigation and a hierarchical "focus-mode" architecture that hides all non-essential UI elements dynamically.',
     technologies: ['Figma', 'Prototype.io', 'Motion Design'],
     client: 'Aether Technologies',
     year: '2022',
@@ -80,6 +88,8 @@ const projects = [
     ],
     link: '#',
     description: 'A scalable full-stack application built with the MERN stack, featuring real-time data synchronization and a modular architecture.',
+    challenge: 'Ensuring zero-latency data sync between multiple users in a high-traffic collaborative environment.',
+    solution: 'Leveraged Redis for state management and Socket.io for bidirectional communication, resulting in sub-100ms sync times.',
     technologies: ['MongoDB', 'Express.js', 'React', 'Node.js'],
     client: 'Flux Digital',
     year: '2023',
@@ -96,6 +106,8 @@ const projects = [
     ],
     link: '#',
     description: 'A developer-centric framework for building high-performance CLI tools with Python.',
+    challenge: 'Making complex terminal interactions intuitive and easy for developers to implement without boilerplate.',
+    solution: 'Designed a decorator-based API with automatic documentation generation and a suite of high-fidelity UI components for the terminal.',
     technologies: ['Python', 'Click', 'Rich', 'Pytest'],
     client: 'Neon Open Source',
     year: '2024',
@@ -136,7 +148,7 @@ export default function Portfolio() {
     : projects.filter(p => p.category === activeCategory);
 
   return (
-    <section id="portfolio" className="py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="portfolio" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 gap-8">
         <div className="max-w-2xl">
           <h2 className="text-[10px] tracking-[0.4em] text-accent uppercase font-black mb-6">Recent Projects</h2>
@@ -145,23 +157,29 @@ export default function Portfolio() {
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2 border transition-all cursor-pointer ${
-                activeCategory === cat 
-                  ? 'bg-accent text-black border-accent' 
-                  : 'text-gray-500 border-border-theme hover:text-fg-main hover:border-gray-500'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const count = cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2 border transition-all cursor-pointer flex items-center gap-2 ${
+                  activeCategory === cat 
+                    ? 'bg-accent text-black border-accent' 
+                    : 'text-gray-500 border-border-theme hover:text-fg-main hover:border-gray-500'
+                }`}
+              >
+                <span>{cat}</span>
+                <span className={`text-[8px] font-bold ${activeCategory === cat ? 'text-black/50' : 'text-gray-600'}`}>
+                  [{count}]
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((project, idx) => (
             <motion.div
@@ -175,7 +193,7 @@ export default function Portfolio() {
                 setSelectedProject(project);
                 setCurrentImageIdx(0);
               }}
-              className="group relative bg-bg-page border border-border-theme p-8 h-[500px] flex flex-col justify-end overflow-hidden hover:border-accent transition-colors cursor-pointer"
+              className="group relative bg-bg-page border border-border-theme p-6 md:p-8 h-[400px] md:h-[500px] flex flex-col justify-end overflow-hidden hover:border-accent transition-colors cursor-pointer"
             >
               <div className="absolute top-8 right-8 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
                 / {project.category}
@@ -229,7 +247,7 @@ export default function Portfolio() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 50, scale: 0.95 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-6xl bg-bg-page border border-border-theme overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh]"
+              className="relative w-full h-full lg:h-auto max-w-6xl bg-bg-page border border-border-theme shadow-2xl flex flex-col lg:flex-row lg:max-h-[90vh] overflow-y-auto lg:overflow-hidden"
             >
               <button 
                 onClick={() => setSelectedProject(null)}
@@ -239,7 +257,7 @@ export default function Portfolio() {
                 <X size={24} />
               </button>
 
-              <div className="w-full lg:w-3/5 h-[300px] md:h-[400px] lg:h-auto overflow-hidden bg-accent/5 relative group/carousel shrink-0">
+              <div className="w-full lg:w-3/5 h-[30vh] sm:h-[40vh] lg:h-auto overflow-hidden bg-accent/5 relative group/carousel shrink-0">
                 <AnimatePresence mode="wait">
                   <motion.img 
                     key={currentImageIdx}
@@ -300,7 +318,22 @@ export default function Portfolio() {
                     <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light">{selectedProject.description}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-x-4 gap-y-6 md:gap-8">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-3 md:space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-accent">The Challenge</h4>
+                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light italic border-l border-accent/30 pl-4">
+                        {selectedProject.challenge}
+                      </p>
+                    </div>
+                    <div className="space-y-3 md:space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-green-500">The Solution</h4>
+                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light border-l border-green-500/30 pl-4">
+                        {selectedProject.solution}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-2 gap-x-4 gap-y-6 md:gap-8">
                     <div className="space-y-2 md:space-y-4">
                       <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Client</h4>
                       <p className="text-fg-main text-[11px] md:text-sm font-bold uppercase tracking-wider">{selectedProject.client}</p>
@@ -321,6 +354,21 @@ export default function Portfolio() {
                         ))}
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 md:mt-12 space-y-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Visual Gallery</h4>
+                  <div className="grid grid-cols-4 gap-2">
+                    {selectedProject.images.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImageIdx(i)}
+                        className={`aspect-video overflow-hidden border ${i === currentImageIdx ? 'border-accent' : 'border-border-theme'} transition-all`}
+                      >
+                        <img src={img} alt="thumbnail" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      </button>
+                    ))}
                   </div>
                 </div>
 
